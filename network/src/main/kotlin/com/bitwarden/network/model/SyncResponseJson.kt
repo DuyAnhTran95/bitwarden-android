@@ -234,79 +234,133 @@ data class SyncResponseJson(
         val creationDate: Instant,
     ) {
         /**
-         * Represents an organization in the vault response.
+         * Represents an organization profile for the current user, containing the organization's
+         * feature flags, membership details, and configuration settings.
          *
-         * @property shouldUsePolicies If the organization should use policies.
-         * @property keyConnectorUrl The key connector URL of the organization (nullable).
-         * @property type The type of organization.
-         * @property seats The number of seats in the organization (nullable).
-         * @property isEnabled If the organization is enabled.
-         * @property providerType They type of provider for the organization (nullable).
-         * @property maxCollections The max collections of the organization (nullable).
-         * @property isSelfHost If the organization is self hosted.
-         * @property permissions The permissions of the organization.
-         * @property providerId The provider ID of the organization (nullable).
-         * @property id The ID of the organization.
-         * @property shouldUseGroups If the organization should use groups.
-         * @property shouldUseDirectory If the organization should use a directory.
+         * @property id Unique identifier for the organization.
+         * @property name Display name of the organization.
          * @property key The key of the organization (nullable).
-         * @property providerName The provider name of the organization (nullable).
-         * @property shouldUsersGetPremium If users of the organization get Premium.
-         * @property maxStorageGb The max storage in Gb of the organization (nullable).
-         * @property identifier The identifier of the organization (nullable).
-         * @property use2fa If the organization uses 2FA.
-         * @property familySponsorshipToDelete If the organization has a
-         * family sponsorship to delete (nullable).
-         * @property userId The user id (nullable).
-         * @property shouldUseEvents If the organization should use events.
-         * @property familySponsorshipFriendlyName If the family sponsorship is a friendly name.
-         * @property shouldUseTotp If he organization should use TOTP.
-         * @property familySponsorshipLastSyncDate The last date the family sponsorship
-         * was synced (nullable).
-         * @property name The name of the organization (nullable).
-         * @property shouldUseApi If the organization should use API.
-         * @property familySponsorshipValidUntil The family sponsorship valid until
-         * of the organization (nullable).
-         * @property status The status of the organization.
-         * @property limitItemDeletion If the organization limits item deletion.
+         * @property status The user's membership status in the organization.
+         * @property type The user's role in the organization.
+         * @property enabled Whether the organization is currently enabled.
+         * @property shouldUsePolicies Whether the organization has access to policies features.
+         * @property shouldUseGroups Whether the organization has access to groups features.
+         * @property shouldUseDirectory Whether the organization has access to directory sync
+         * features.
+         * @property shouldUseEvents Whether the organization has access to event logging features.
+         * @property shouldUseTotp Whether the organization can enforce TOTP for members.
+         * @property use2fa Whether the organization has access to two-factor authentication
+         * features.
+         * @property shouldUseApi Whether the organization has access to the Bitwarden Public API.
+         * @property useSso Whether the organization has access to SSO features.
+         * @property useOrganizationDomains Whether the organization can manage verified domains.
+         * @property useScim Whether the organization has access to SCIM provisioning.
+         * @property useCustomPermissions Whether the organization can use the
+         * [OrganizationType.CUSTOM] role.
+         * @property useResetPassword Whether the organization has access to the account recovery
+         * (admin password reset) feature.
+         * @property useSecretsManager Whether the organization has access to Secrets Manager.
+         * @property usePasswordManager Whether the organization has access to Password Manager.
+         * @property useActivateAutofillPolicy Whether the organization can use the activate
+         * autofill policy.
+         * @property useAutomaticUserConfirmation Whether the organization can automatically
+         * confirm new members without manual admin approval.
+         * @property isSelfHost Whether the organization can create a license file for a self-hosted
+         * instance.
+         * @property shouldUsersGetPremium Whether organization members receive premium features.
+         * @property seats The number of licensed seats for the organization.
+         * @property maxCollections The maximum number of collections the organization can create.
+         * @property maxStorageGb The maximum encrypted storage in gigabytes, if limited.
+         * @property ssoBound Whether the current user's account is bound to this organization
+         * via SSO.
+         * @property identifier The organization's SSO identifier.
+         * @property permissions The current user's custom permissions, relevant when
+         * [OrganizationType.CUSTOM] is the user's type.
+         * @property resetPasswordEnrolled Whether the current user is enrolled in account recovery
+         * for this organization.
+         * @property userId The current user's personal user ID.
+         * @property organizationUserId The current user's organization membership ID.
+         * @property hasPublicAndPrivateKeys Whether the organization has both a public and private
+         * key configured.
+         * @property providerId The ID of the provider managing this organization, if any.
+         * @property providerName The name of the provider managing this organization, if any.
+         * @property providerType The type of provider managing this organization, if any.
+         * @property isProviderUser Whether the current user accesses this organization through a
+         * provider.
+         * @property isMember Whether the current user is a direct member of this organization (as
+         * opposed to provider-only access).
+         * @property familySponsorshipFriendlyName The friendly name of a pending families
+         * sponsorship, if any.
+         * @property familySponsorshipAvailable Whether the organization can sponsor a families
+         * plan for the current user.
+         * @property productTierType The subscription tier of the organization.
+         * @property isKeyConnectorEnabled Whether Key Connector is enabled for this organization.
+         * @property shouldUseKeyConnector Whether the organization uses Key Connector for
+         * decryption.
+         * @property keyConnectorUrl The URL of the Key Connector service, if enabled.
+         * @property familySponsorshipLastSyncDate The date the families sponsorship was last
+         * synced, if applicable.
+         * @property familySponsorshipValidUntil The date the families sponsorship expires, if
+         * applicable.
+         * @property familySponsorshipToDelete Whether the families sponsorship is scheduled for
+         * deletion.
+         * @property accessSecretsManager Whether the current user has access to Secrets Manager
+         * for this organization.
+         * @property limitCollectionCreation Whether collection creation is restricted to owners
+         * and admins only. When false, any member can create collections and automatically
+         * receives manage permissions over collections they create.
+         * @property limitCollectionDeletion Whether collection deletion is restricted to owners and
+         * admins only. When true, regular users cannot delete collections that they manage.
+         * @property limitItemDeletion Whether item deletion is restricted to members with the
+         * Manage collection permission. When false, members with Edit permission can also delete
+         * items within their collections.
+         * @property allowAdminAccessToAllCollectionItems Whether owners and admins have implicit
+         * manage permissions over all collections. When true, owners and admins can alter items,
+         * groups, and permissions across all collections without requiring explicit collection
+         * assignments. When false, admins can only access collections where they have been
+         * explicitly assigned.
+         * @property userIsClaimedByOrganization Whether the current user has been claimed by this
+         * organization.
+         * @property userIsManagedByOrganization Whether the current user's account is managed by
+         * this organization.
+         * @property useAccessIntelligence Whether the organization has access to Access
+         * Intelligence features.
+         * @property useAdminSponsoredFamilies Whether the organization can sponsor families plans
+         * for members (Families For Enterprises).
+         * @property useDisableSmAdsForUsers Whether Secrets Manager ads are disabled for users.
+         * @property isAdminInitiated Whether the organization's Families For Enterprises
+         * sponsorship was initiated by an admin.
+         * @property ssoEnabled Whether SSO login is currently enabled for this organization.
+         * @property ssoMemberDecryptionType The decryption type used for SSO members, if SSO is
+         * enabled.
+         * @property usePhishingBlocker Whether the organization has access to phishing blocker
+         * features.
+         * @property useMyItems Whether the organization has access to the My Items collection
+         * feature. This allows users to store personal items in the organization vault if the
+         * Centralize Organization Ownership policy is enabled.
          */
         @Serializable
         data class Organization(
-            @SerialName("usePolicies")
-            val shouldUsePolicies: Boolean,
+            @SerialName("id")
+            val id: String,
 
-            @SerialName("keyConnectorEnabled")
-            val shouldUseKeyConnector: Boolean,
+            @SerialName("name")
+            val name: String?,
 
-            @SerialName("keyConnectorUrl")
-            val keyConnectorUrl: String?,
+            @SerialName("key")
+            val key: String?,
+
+            @SerialName("status")
+            val status: OrganizationStatusType,
 
             @SerialName("type")
             val type: OrganizationType,
 
-            @SerialName("seats")
-            val seats: Int?,
-
             @SerialName("enabled")
             val isEnabled: Boolean,
 
-            @SerialName("providerType")
-            val providerType: Int?,
-
-            @SerialName("maxCollections")
-            val maxCollections: Int?,
-
-            @SerialName("selfHost")
-            val isSelfHost: Boolean,
-
-            @SerialName("permissions")
-            val permissions: Permissions,
-
-            @SerialName("providerId")
-            val providerId: String?,
-
-            @SerialName("id")
-            val id: String,
+            @SerialName("usePolicies")
+            val shouldUsePolicies: Boolean,
 
             @SerialName("useGroups")
             val shouldUseGroups: Boolean,
@@ -314,61 +368,169 @@ data class SyncResponseJson(
             @SerialName("useDirectory")
             val shouldUseDirectory: Boolean,
 
-            @SerialName("key")
-            val key: String?,
-
-            @SerialName("providerName")
-            val providerName: String?,
-
-            @SerialName("usersGetPremium")
-            val shouldUsersGetPremium: Boolean,
-
-            @SerialName("maxStorageGb")
-            val maxStorageGb: Int?,
-
-            @SerialName("identifier")
-            val identifier: String?,
-
-            @SerialName("use2fa")
-            val use2fa: Boolean,
-
-            @SerialName("familySponsorshipToDelete")
-            val familySponsorshipToDelete: Boolean?,
-
-            @SerialName("userId")
-            val userId: String?,
-
             @SerialName("useEvents")
             val shouldUseEvents: Boolean,
-
-            @SerialName("familySponsorshipFriendlyName")
-            val familySponsorshipFriendlyName: String?,
 
             @SerialName("useTotp")
             val shouldUseTotp: Boolean,
 
-            @SerialName("familySponsorshipLastSyncDate")
-            @Contextual
-            val familySponsorshipLastSyncDate: Instant?,
-
-            @SerialName("name")
-            val name: String?,
+            @SerialName("use2fa")
+            val use2fa: Boolean,
 
             @SerialName("useApi")
             val shouldUseApi: Boolean,
 
-            @SerialName("familySponsorshipValidUntil")
+            @SerialName("useSso")
+            val useSso: Boolean = false,
+
+            @SerialName("useOrganizationDomains")
+            val useOrganizationDomains: Boolean = false,
+
+            @SerialName("useScim")
+            val useScim: Boolean = false,
+
+            @SerialName("useCustomPermissions")
+            val useCustomPermissions: Boolean = false,
+
+            @SerialName("useResetPassword")
+            val useResetPassword: Boolean = false,
+
+            @SerialName("useSecretsManager")
+            val useSecretsManager: Boolean = false,
+
+            @SerialName("usePasswordManager")
+            val usePasswordManager: Boolean = false,
+
+            @SerialName("useActivateAutofillPolicy")
+            val useActivateAutofillPolicy: Boolean = false,
+
+            @SerialName("useAutomaticUserConfirmation")
+            val useAutomaticUserConfirmation: Boolean = false,
+
+            @SerialName("selfHost")
+            val isSelfHost: Boolean,
+
+            @SerialName("usersGetPremium")
+            val shouldUsersGetPremium: Boolean,
+
+            @SerialName("seats")
+            val seats: UInt?,
+
+            @SerialName("maxCollections")
+            val maxCollections: UInt?,
+
+            @SerialName("maxStorageGb")
+            val maxStorageGb: UInt?,
+
+            @SerialName("ssoBound")
+            val ssoBound: Boolean = false,
+
+            @SerialName("identifier")
+            val identifier: String?,
+
+            @SerialName("permissions")
+            val permissions: Permissions,
+
+            @SerialName("resetPasswordEnrolled")
+            val resetPasswordEnrolled: Boolean = false,
+
+            @SerialName("userId")
+            val userId: String?,
+
+            @SerialName("organizationUserId")
+            val organizationUserId: String?,
+
+            @SerialName("hasPublicAndPrivateKeys")
+            val hasPublicAndPrivateKeys: Boolean = false,
+
+            @SerialName("providerId")
+            val providerId: String?,
+
+            @SerialName("providerName")
+            val providerName: String?,
+
+            @SerialName("providerType")
+            val providerType: ProviderType?,
+
+            @SerialName("isProviderUser")
+            val isProviderUser: Boolean = false,
+
+            @SerialName("isMember")
+            val isMember: Boolean = false,
+
+            @SerialName("familySponsorshipFriendlyName")
+            val familySponsorshipFriendlyName: String?,
+
+            @SerialName("familySponsorshipAvailable")
+            val familySponsorshipAvailable: Boolean = false,
+
+            @SerialName("productTierType")
+            val productTierType: ProductTierType = ProductTierType.FREE,
+
+            @SerialName("keyConnectorEnabled")
+            val isKeyConnectorEnabled: Boolean,
+
+            @SerialName("useKeyConnector")
+            val shouldUseKeyConnector: Boolean = false,
+
+            @SerialName("keyConnectorUrl")
+            val keyConnectorUrl: String?,
+
             @Contextual
+            @SerialName("familySponsorshipLastSyncDate")
+            val familySponsorshipLastSyncDate: Instant?,
+
+            @Contextual
+            @SerialName("familySponsorshipValidUntil")
             val familySponsorshipValidUntil: Instant?,
 
-            @SerialName("status")
-            val status: OrganizationStatusType,
+            @SerialName("familySponsorshipToDelete")
+            val familySponsorshipToDelete: Boolean?,
+
+            @SerialName("accessSecretsManager")
+            val accessSecretsManager: Boolean = false,
+
+            @SerialName("limitCollectionCreation")
+            val limitCollectionCreation: Boolean = false,
+
+            @SerialName("limitCollectionDeletion")
+            val limitCollectionDeletion: Boolean = false,
+
+            @SerialName("limitItemDeletion")
+            val limitItemDeletion: Boolean = false,
+
+            @SerialName("allowAdminAccessToAllCollectionItems")
+            val allowAdminAccessToAllCollectionItems: Boolean = false,
 
             @SerialName("userIsClaimedByOrganization")
             val userIsClaimedByOrganization: Boolean = false,
 
-            @SerialName("limitItemDeletion")
-            val limitItemDeletion: Boolean = false,
+            @SerialName("userIsManagedByOrganization")
+            val userIsManagedByOrganization: Boolean = false,
+
+            @SerialName("useAccessIntelligence")
+            val useAccessIntelligence: Boolean = false,
+
+            @SerialName("useAdminSponsoredFamilies")
+            val useAdminSponsoredFamilies: Boolean = false,
+
+            @SerialName("useDisableSmAdsForUsers")
+            val useDisableSmAdsForUsers: Boolean = false,
+
+            @SerialName("isAdminInitiated")
+            val isAdminInitiated: Boolean = false,
+
+            @SerialName("ssoEnabled")
+            val ssoEnabled: Boolean = false,
+
+            @SerialName("ssoMemberDecryptionType")
+            val ssoMemberDecryptionType: MemberDecryptionType?,
+
+            @SerialName("usePhishingBlocker")
+            val usePhishingBlocker: Boolean = false,
+
+            @SerialName("useMyItems")
+            val useMyItems: Boolean = false,
         )
 
         /**
@@ -415,10 +577,24 @@ data class SyncResponseJson(
         )
 
         /**
-         * Represents permissions in the vault response.
+         * Custom permission set for a user with the [OrganizationType.CUSTOM] role.
          *
-         * @property shouldManageResetPassword If reset password should be managed.
-         * @property shouldManagePolicies If policies should be managed.
+         * @property shouldManageResetPassword Can manage the account recovery (password reset)
+         * feature.
+         * @property shouldManagePolicies Can manage organization policies.
+         * @property accessEventLogs Can view the organization's event logs.
+         * @property accessImportExport Can import and export organization vault data.
+         * @property accessReports Can access organization reports.
+         * @property createNewCollections Can create new collections.
+         * @property editAnyCollection Can edit any collection, including those they are not
+         * assigned to.
+         * @property deleteAnyCollection Can delete any collection, including those they are not
+         * assigned to.
+         * @property manageGroups Can manage groups within the organization.
+         * @property manageSso Can manage SSO configuration.
+         * @property manageUsers Can manage organization members.
+         * @property manageScim Can manage SCIM (System for Cross-domain Identity Management)
+         * configuration.
          */
         @Serializable
         data class Permissions(
@@ -427,6 +603,36 @@ data class SyncResponseJson(
 
             @SerialName("managePolicies")
             val shouldManagePolicies: Boolean,
+
+            @SerialName("accessEventLogs")
+            val accessEventLogs: Boolean = false,
+
+            @SerialName("accessImportExport")
+            val accessImportExport: Boolean = false,
+
+            @SerialName("accessReports")
+            val accessReports: Boolean = false,
+
+            @SerialName("createNewCollections")
+            val createNewCollections: Boolean = false,
+
+            @SerialName("editAnyCollection")
+            val editAnyCollection: Boolean = false,
+
+            @SerialName("deleteAnyCollection")
+            val deleteAnyCollection: Boolean = false,
+
+            @SerialName("manageGroups")
+            val manageGroups: Boolean = false,
+
+            @SerialName("manageSso")
+            val manageSso: Boolean = false,
+
+            @SerialName("manageUsers")
+            val manageUsers: Boolean = false,
+
+            @SerialName("manageScim")
+            val manageScim: Boolean = false,
         )
     }
 

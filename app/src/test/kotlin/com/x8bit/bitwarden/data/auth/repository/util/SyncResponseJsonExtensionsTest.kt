@@ -38,7 +38,7 @@ class SyncResponseJsonExtensionsTest {
                 ),
             ),
             listOf(
-                createMockOrganizationNetwork(number = 1, shouldUseKeyConnector = true),
+                createMockOrganizationNetwork(number = 1, isKeyConnectorEnabled = true),
                 createMockOrganizationNetwork(
                     number = 2,
                     type = OrganizationType.USER,

@@ -21,7 +21,7 @@ fun SyncResponseJson.Profile.Organization.toOrganization(): Organization? =
         Organization(
             id = this.id,
             name = it,
-            shouldUseKeyConnector = this.shouldUseKeyConnector,
+            shouldUseKeyConnector = this.isKeyConnectorEnabled,
             role = this.type,
             shouldManageResetPassword = this.permissions.shouldManageResetPassword,
             keyConnectorUrl = this.keyConnectorUrl,
